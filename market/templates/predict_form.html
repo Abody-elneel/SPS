@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Make Prediction - Student Performance Predictor
+{% endblock %}
+
+{% block header_title %}Make a Prediction{% endblock %}
+{% block header_subtitle %}Enter student details to predict their academic performance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('predict') }}">
+                <div class="mb-3">
+                    <label for="study_hours" class="form-label">Study Hours Per Day</label>
+                    <input type="number" step="0.1" class="form-control" id="study_hours" name="study_hours" required min="0" max="24">
+                </div>
+
+                <div class="mb-3">
+                    <label for="extracurricular_hours" class="form-label">Extracurricular Hours Per Day</label>
+                    <input type="number" step="0.1" class="form-control" id="extracurricular_hours" name="extracurricular_hours" required min="0" max="24">
+                </div>
+
+                <div class="mb-3">
+                    <label for="sleep_hours" class="form-label">Sleep Hours Per Day</label>
+                    <input type="number" step="0.1" class="form-control" id="sleep_hours" name="sleep_hours" required min="3" max="12">
+                </div>
+
+                <div class="mb-3">
+                    <label for="social_hours" class="form-label">Social Hours Per Day</label>
+                    <input type="number" step="0.1" class="form-control" id="social_hours" name="social_hours" required min="0" max="24">
+                </div>
+
+                <div class="mb-3">
+                    <label for="physical_activity_hours" class="form-label">Physical Activity Hours Per Day</label>
+                    <input type="number" step="0.1" class="form-control" id="physical_activity_hours" name="physical_activity_hours" required min="0" max="24">
+                </div>
+
+                <div class="mb-3">
+                    <label for="gpa" class="form-label">GPA</label>
+                    <input type="number" step="0.01" class="form-control" id="gpa" name="gpa" required min="0" max="4.0">
+                </div>
+
+                <div class="mb-3">
+                    <label for="stress_level" class="form-label">Stress Level</label>
+                    <select class="form-select" id="stress_level" name="stress_level" required>
+                        <option value="" selected disabled>Select stress level</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Predict Performance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
