@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, IntegerField, SelectField, SubmitField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms import StringField, FloatField, IntegerField, SelectField, SubmitField, PasswordField
+from wtforms.validators import DataRequired, NumberRange, Email, Length, EqualTo
 
 class PredictionForm(FlaskForm):
     study_hours = FloatField('Study Hours Per Day', validators=[
@@ -25,3 +25,16 @@ class PredictionForm(FlaskForm):
     ], validators=[DataRequired()])
 
     submit = SubmitField('Predict Performance')
+
+# Added these forms for login functionality
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=30)])
+    email_address = StringField('Email Address', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    password_confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Register')
+
+class LoginForm(FlaskForm):
+    email_address = StringField('Email Address', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
