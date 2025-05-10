@@ -12,8 +12,9 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'login'
+    login_manager.login_view = 'auth.login'  # Updated to match blueprint structure
 
+    # Import and register blueprints
     from market.routes import main_bp
     app.register_blueprint(main_bp)
 
@@ -22,6 +23,7 @@ def create_app():
 
     return app
 
+# Import at the bottom to avoid circular imports
 from market.models import User
 
 @login_manager.user_loader

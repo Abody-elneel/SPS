@@ -11,49 +11,95 @@ Make Prediction - Student Performance Predictor
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="form-container">
-            <form method="POST" action="{{ url_for('predict') }}">
+            <form method="POST" action="{{ url_for('main.predict') }}">
+                {{ form.hidden_tag() }}
+                
                 <div class="mb-3">
-                    <label for="study_hours" class="form-label">Study Hours Per Day</label>
-                    <input type="number" step="0.1" class="form-control" id="study_hours" name="study_hours" required min="0" max="24">
+                    <label for="study_hours" class="form-label">{{ form.study_hours.label }}</label>
+                    {{ form.study_hours(class="form-control", min="0", max="24", step="0.1") }}
+                    {% if form.study_hours.errors %}
+                        <div class="text-danger">
+                            {% for error in form.study_hours.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="extracurricular_hours" class="form-label">Extracurricular Hours Per Day</label>
-                    <input type="number" step="0.1" class="form-control" id="extracurricular_hours" name="extracurricular_hours" required min="0" max="24">
+                    <label for="extracurricular_hours" class="form-label">{{ form.extracurricular_hours.label }}</label>
+                    {{ form.extracurricular_hours(class="form-control", min="0", max="24", step="0.1") }}
+                    {% if form.extracurricular_hours.errors %}
+                        <div class="text-danger">
+                            {% for error in form.extracurricular_hours.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="sleep_hours" class="form-label">Sleep Hours Per Day</label>
-                    <input type="number" step="0.1" class="form-control" id="sleep_hours" name="sleep_hours" required min="3" max="12">
+                    <label for="sleep_hours" class="form-label">{{ form.sleep_hours.label }}</label>
+                    {{ form.sleep_hours(class="form-control", min="3", max="12", step="1") }}
+                    {% if form.sleep_hours.errors %}
+                        <div class="text-danger">
+                            {% for error in form.sleep_hours.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="social_hours" class="form-label">Social Hours Per Day</label>
-                    <input type="number" step="0.1" class="form-control" id="social_hours" name="social_hours" required min="0" max="24">
+                    <label for="social_hours" class="form-label">{{ form.social_hours.label }}</label>
+                    {{ form.social_hours(class="form-control", min="0", max="24", step="0.1") }}
+                    {% if form.social_hours.errors %}
+                        <div class="text-danger">
+                            {% for error in form.social_hours.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="physical_activity_hours" class="form-label">Physical Activity Hours Per Day</label>
-                    <input type="number" step="0.1" class="form-control" id="physical_activity_hours" name="physical_activity_hours" required min="0" max="24">
+                    <label for="physical_activity_hours" class="form-label">{{ form.physical_activity_hours.label }}</label>
+                    {{ form.physical_activity_hours(class="form-control", min="0", max="24", step="1") }}
+                    {% if form.physical_activity_hours.errors %}
+                        <div class="text-danger">
+                            {% for error in form.physical_activity_hours.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="gpa" class="form-label">GPA</label>
-                    <input type="number" step="0.01" class="form-control" id="gpa" name="gpa" required min="0" max="4.0">
+                    <label for="gpa" class="form-label">{{ form.gpa.label }}</label>
+                    {{ form.gpa(class="form-control", min="0", max="4.0", step="0.01") }}
+                    {% if form.gpa.errors %}
+                        <div class="text-danger">
+                            {% for error in form.gpa.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="stress_level" class="form-label">Stress Level</label>
-                    <select class="form-select" id="stress_level" name="stress_level" required>
-                        <option value="" selected disabled>Select stress level</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                    </select>
+                    <label for="stress_level" class="form-label">{{ form.stress_level.label }}</label>
+                    {{ form.stress_level(class="form-select") }}
+                    {% if form.stress_level.errors %}
+                        <div class="text-danger">
+                            {% for error in form.stress_level.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary btn-lg">Predict Performance</button>
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
                 </div>
             </form>
         </div>
