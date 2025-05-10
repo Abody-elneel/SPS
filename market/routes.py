@@ -1,24 +1,25 @@
-from flask import render_template, url_for, flash, redirect, request
-from market import create_app, db
+from flask import render_template, url_for, flash, redirect, request, Blueprint
+from market import db
 from market.models import Student, Prediction
 from market.forms import PredictionForm
 from datetime import datetime
 from market.predict import predict_performance
 
-app = create_app()
+# Create a Blueprint instead of re-creating the app
+main_bp = Blueprint('main', __name__)
 
-@app.route('/')
-@app.route('/home')
+@main_bp.route('/')
+@main_bp.route('/home')
 def home():
     recent_predictions = Prediction.query.order_by(Prediction.date.desc()).limit(5).all()
     return render_template('home.html', recent_predictions=recent_predictions)
 
-@app.route('/predict_form')
+@main_bp.route('/predict_form')
 def predict_form():
     form = PredictionForm()
     return render_template('predict_form.html', form=form)
 
-@app.route('/predict', methods=['POST'])
+@main_bp.route('/predict', methods=['POST'])
 def predict():
     form = PredictionForm()
     if form.validate_on_submit():
@@ -34,7 +35,12 @@ def predict():
 
             input_features = {
                 'GPA': gpa,
-                'Study_Hours_Per_Day': study_hours
+                'Study_Hours_Per_Day': study_hours,
+                'Extracurricular_Hours_Per_Day': extracurricular,
+                'Sleep_Hours_Per_Day': sleep_hours,
+                'Social_Hours_Per_Day': social_hours,
+                'Physical_Activity_Hours_Per_Day': physical_activity,
+                'Stress_Level': stress_level
             }
 
             prediction_score = predict_performance(input_features)
@@ -96,12 +102,12 @@ def predict():
 
         except Exception as e:
             flash(f"An error occurred: {e}", "danger")
-            return redirect(url_for('predict_form'))
+            return redirect(url_for('main.predict_form'))
     else:
         flash("Please fix form errors.", "danger")
-        return redirect(url_for('predict_form'))
+        return redirect(url_for('main.predict_form'))
 
-@app.route('/history')
+@main_bp.route('/history')
 def history():
     page = request.args.get('page', 1, type=int)
     per_page = 10
@@ -126,7 +132,7 @@ def history():
                            page=page,
                            pages=predictions.pages)
 
-@app.route('/prediction/<int:id>')
+@main_bp.route('/prediction/<int:id>')
 def view_prediction(id):
     prediction = Prediction.query.get_or_404(id)
 
@@ -152,6 +158,6 @@ def view_prediction(id):
 
     return render_template('result.html', prediction=prediction_data, student_data=student_data)
 
-@app.route('/about')
+@main_bp.route('/about')
 def about():
     return render_template('about.html')

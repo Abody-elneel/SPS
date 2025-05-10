@@ -44,8 +44,8 @@ Home - Student Performance Predictor
             <p class="lead">Our system uses advanced machine learning models to predict student academic performance based on various factors such as study habits, previous performance, lifestyle, and more.</p>
             <p>This tool can help educators, students, and parents identify areas for improvement and develop targeted strategies to enhance academic success.</p>
             <div class="mt-4">
-                <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg">Make a Prediction</a>
-                <a href="{{ url_for('about') }}" class="btn btn-outline-secondary btn-lg ms-2">Learn More</a>
+                <a href="{{ url_for('main.predict_form') }}" class="btn btn-primary btn-lg">Make a Prediction</a>
+                <a href="{{ url_for('main.about') }}" class="btn btn-outline-secondary btn-lg ms-2">Learn More</a>
             </div>
         </div>
     </div>
@@ -56,17 +56,17 @@ Home - Student Performance Predictor
                 <ul class="list-group">
                     {% for prediction in recent_predictions %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ prediction.subject|title }}
-                            <span class="badge bg-primary rounded-pill">{{ prediction.score }}</span>
+                            {{ prediction.date.strftime('%Y-%m-%d') }}
+                            <span class="badge bg-primary rounded-pill">{{ prediction.Predicted_Score }}</span>
                         </li>
                     {% endfor %}
                 </ul>
                 <div class="mt-3">
-                    <a href="{{ url_for('history') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    <a href="{{ url_for('main.history') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
             {% else %}
                 <p class="text-muted">No predictions made yet</p>
-                <a href="{{ url_for('predict_form') }}" class="btn btn-sm btn-outline-primary">Make Your First Prediction</a>
+                <a href="{{ url_for('main.predict_form') }}" class="btn btn-sm btn-outline-primary">Make Your First Prediction</a>
             {% endif %}
         </div>
     </div>
@@ -101,7 +101,7 @@ Home - Student Performance Predictor
     <div class="container">
         <h3>Ready to improve academic performance?</h3>
         <p class="lead">Start by making your first prediction and get personalized recommendations.</p>
-        <a href="{{ url_for('predict_form') }}" class="btn btn-primary btn-lg mt-3">Get Started Now</a>
+        <a href="{{ url_for('main.predict_form') }}" class="btn btn-primary btn-lg mt-3">Get Started Now</a>
     </div>
 </div>
 
