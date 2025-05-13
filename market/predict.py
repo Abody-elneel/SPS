@@ -1,65 +1,48 @@
 import pandas as pd
+import pickle
 import os
-import random
+
+# Load the model once (global variable)
+model_path = os.path.join(os.path.dirname(__file__), 'predict.pkl')
+with open(model_path, 'rb') as file:
+    model = pickle.load(file)
 
 def predict_performance(form_data):
     """
-    Predicts student performance based on the provided form data.
-    
+    Predicts student GPA based on the provided form data using a trained ML model.
+
     Args:
-        form_data (dict): Dictionary containing the student's metrics
-            - GPA
+        form_data (dict): Dictionary containing the student's metrics:
             - Study_Hours_Per_Day
             - Sleep_Hours_Per_Day
             - Social_Hours_Per_Day
             - Extracurricular_Hours_Per_Day
             - Physical_Activity_Hours_Per_Day
             - Stress_Level
-            
+
     Returns:
-        float: Predicted performance score (0-100)
+        float: Predicted GPA
     """
-    # Extract relevant features
-    gpa = form_data.get('GPA', 0)
-    study_hours = form_data.get('Study_Hours_Per_Day', 0)
-    sleep_hours = form_data.get('Sleep_Hours_Per_Day', 0)
-    stress_level = form_data.get('Stress_Level', 'Medium')
-    
-    # Base score comes from GPA (max 60 points)
-    base_score = min(gpa * 15, 60)
-    
-    # Study hours bonus (max 20 points)
-    study_bonus = min(study_hours * 2, 20)
-    
-    # Sleep factor (-10 to +10 points)
-    # Optimal sleep is 7-8 hours
-    sleep_factor = 0
-    if sleep_hours < 6:
-        sleep_factor = -10
-    elif sleep_hours < 7:
-        sleep_factor = -5
-    elif sleep_hours <= 8:
-        sleep_factor = 10
-    elif sleep_hours <= 9:
-        sleep_factor = 5
-    else:
-        sleep_factor = 0
-        
-    # Stress penalty
-    stress_penalty = 0
-    if stress_level == 'High':
-        stress_penalty = -10
-    elif stress_level == 'Medium':
-        stress_penalty = -5
-    
-    # Calculate total score
-    total_score = base_score + study_bonus + sleep_factor + stress_penalty
-    
-    # Add small random variation (±5 points)
-    variation = random.uniform(-5, 5)
-    total_score += variation
-    
-    # Ensure score is within 0-100 range
-    total_score = max(0, min(total_score, 100))
-    
-    return round(total_score, 1)
+    # Prepare input features in the same order used in training
+    features = pd.DataFrame([{
+        'Study_Hours_Per_Day': form_data.get('Study_Hours_Per_Day', 0),
+        'Sleep_Hours_Per_Day': form_data.get('Sleep_Hours_Per_Day', 0),
+        'Social_Hours_Per_Day': form_data.get('Social_Hours_Per_Day', 0),
+        'Extracurricular_Hours_Per_Day': form_data.get('Extracurricular_Hours_Per_Day', 0),
+        'Physical_Activity_Hours_Per_Day': form_data.get('Physical_Activity_Hours_Per_Day', 0),
+        'Stress_Level': form_data.get('Stress_Level', 'Medium')
+    }])
+
+    # Handle categorical encoding (e.g., Stress_Level)
+    # Make sure this matches your model's training preprocessing
+    if 'Stress_Level' in features.columns:
+        features = pd.get_dummies(features, columns=['Stress_Level'], drop_first=True)
+
+    # Align features with training columns if needed (optional, safer)
+    # model_features = model.feature_names_in_
+    # features = features.reindex(columns=model_features, fill_value=0)
+
+    # Make prediction
+    prediction = model.predict(features)[0]
+
+    return round(prediction, 2)
