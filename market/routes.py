@@ -1,3 +1,4 @@
+
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from flask_login import login_user, current_user, logout_user, login_required
 from market import db
@@ -16,106 +17,107 @@ def home():
     recent_predictions = Prediction.query.order_by(Prediction.date.desc()).limit(5).all()
     return render_template('home.html', recent_predictions=recent_predictions)
 
-@main_bp.route('/predict_form')
+@main_bp.route('/predict_form', methods=['GET', 'POST'])
 def predict_form():
     form = PredictionForm()
-    return render_template('predict_form.html', form=form)
+    if request.method == 'GET':
+        return render_template('predict_form.html', form=form)
+    else:  # POST request
+        if form.validate_on_submit():
+            try:
+                # Get form data
+                study_hours = form.study_hours.data
+                extracurricular = form.extracurricular_hours.data
+                sleep_hours = form.sleep_hours.data
+                social_hours = form.social_hours.data
+                physical_activity = form.physical_activity_hours.data
+                stress_level = form.stress_level.data
 
+                input_features = {
+                    'Study_Hours_Per_Day': study_hours,
+                    'Sleep_Hours_Per_Day': sleep_hours,
+                    'Social_Hours_Per_Day': social_hours,
+                    'Extracurricular_Hours_Per_Day': extracurricular,
+                    'Physical_Activity_Hours_Per_Day': physical_activity,
+                    'Stress_Level': stress_level
+                }
+
+                prediction_score = predict_performance(input_features)
+                prediction_score = max(0, min(prediction_score, 4.0))
+
+                # Determine performance level
+                if prediction_score >= 3.5:
+                    level = "Excellent" 
+                elif prediction_score >= 3.0:
+                    level = "Good"
+                elif prediction_score >= 2.5:
+                    level = "Average"
+                else:
+                    level = "Below Average"
+
+                # Generate recommendations
+                recommendations = []
+                if study_hours < 2:
+                    recommendations.append("Increase study time to at least 2 hours per day")
+                if sleep_hours < 6 or sleep_hours > 9:
+                    recommendations.append("Aim for 7–9 hours of sleep for optimal cognitive function")
+                if prediction_score < 3.0:
+                    recommendations.append("Work on improving academic performance through consistent study habits")
+                if stress_level == 'High':
+                    recommendations.append("Consider stress management techniques like meditation or talking to a counselor")
+                    
+                # Format recommendations as a single string if list is not empty
+                recommendation_text = ". ".join(recommendations) if recommendations else "Keep up the good work!"
+                if recommendations and not recommendation_text.endswith('.'):
+                    recommendation_text += '.'
+
+                # Save prediction
+                prediction = Prediction(
+                    Study_Hours_Per_Day=study_hours,
+                    Extracurricular_Hours_Per_Day=extracurricular,
+                    Sleep_Hours_Per_Day=sleep_hours,
+                    Social_Hours_Per_Day=social_hours,
+                    Physical_Activity_Hours_Per_Day=physical_activity,
+                    GPA=prediction_score,
+                    Stress_Level=stress_level,
+                    Predicted_Score=prediction_score,
+                    Performance_Level=level,
+                    Recommendation=recommendation_text
+                )
+
+                db.session.add(prediction)
+                db.session.commit()
+
+                prediction_data = {
+                    'score': prediction_score,
+                    'level': level,
+                    'recommendation': recommendation_text,
+                    'suggestions': recommendations
+                }
+
+                student_data = {
+                    'study_hours': study_hours,
+                    'extracurricular_hours': extracurricular,
+                    'sleep_hours': sleep_hours,
+                    'social_hours': social_hours,
+                    'physical_activity_hours': physical_activity,
+                    'predicted_gpa': prediction_score,
+                    'stress_level': stress_level
+                }
+
+                return render_template('result.html', prediction=prediction_data, student_data=student_data)
+
+            except Exception as e:
+                flash(f"An error occurred: {e}", "danger")
+                return render_template('predict_form.html', form=form)
+        else:
+            flash("Please fix form errors.", "danger")
+            return render_template('predict_form.html', form=form)
+
+# Route for backward compatibility - redirects to predict_form
 @main_bp.route('/predict', methods=['POST'])
 def predict():
-    form = PredictionForm()
-    if form.validate_on_submit():
-        try:
-            # Get form data
-            study_hours = form.study_hours.data
-            extracurricular = form.extracurricular_hours.data
-            sleep_hours = form.sleep_hours.data
-            social_hours = form.social_hours.data
-            physical_activity = form.physical_activity_hours.data
-            gpa = form.gpa.data
-            stress_level = form.stress_level.data
-
-            input_features = {
-                'GPA': gpa,
-                'Study_Hours_Per_Day': study_hours,
-                'Sleep_Hours_Per_Day': sleep_hours,
-                'Social_Hours_Per_Day': social_hours,
-                'Extracurricular_Hours_Per_Day': extracurricular,
-                'Physical_Activity_Hours_Per_Day': physical_activity,
-                'Stress_Level': stress_level
-            }
-
-            prediction_score = predict_performance(input_features)
-            prediction_score = max(0, min(prediction_score, 100))
-
-            # Determine performance level
-            if prediction_score >= 85:
-                level = "Excellent"
-            elif prediction_score >= 70:
-                level = "Good"
-            elif prediction_score >= 50:
-                level = "Average"
-            else:
-                level = "Below Average"
-
-            # Generate recommendations
-            recommendations = []
-            if study_hours < 2:
-                recommendations.append("Increase study time to at least 2 hours per day.")
-            if sleep_hours < 6 or sleep_hours > 9:
-                recommendations.append("Aim for 7–9 hours of sleep for optimal cognitive function.")
-            if gpa < 3.0:
-                recommendations.append("Work on improving GPA through consistent study habits.")
-            if stress_level == 'High':
-                recommendations.append("Consider stress management techniques like meditation or talking to a counselor.")
-                
-            # Format recommendations as a single string if list is not empty
-            recommendation_text = ". ".join(recommendations) if recommendations else "Keep up the good work!"
-            if recommendations and not recommendation_text.endswith('.'):
-                recommendation_text += '.'
-
-            # Save prediction
-            prediction = Prediction(
-                Study_Hours_Per_Day=study_hours,
-                Extracurricular_Hours_Per_Day=extracurricular,
-                Sleep_Hours_Per_Day=sleep_hours,
-                Social_Hours_Per_Day=social_hours,
-                Physical_Activity_Hours_Per_Day=physical_activity,
-                GPA=gpa,
-                Stress_Level=stress_level,
-                Predicted_Score=prediction_score,
-                Performance_Level=level,
-                Recommendation=recommendation_text
-            )
-
-            db.session.add(prediction)
-            db.session.commit()
-
-            prediction_data = {
-                'score': prediction_score,
-                'level': level,
-                'recommendation': recommendation_text,
-                'suggestions': recommendations
-            }
-
-            student_data = {
-                'study_hours': study_hours,
-                'extracurricular_hours': extracurricular,
-                'sleep_hours': sleep_hours,
-                'social_hours': social_hours,
-                'physical_activity_hours': physical_activity,
-                'gpa': gpa,
-                'stress_level': stress_level
-            }
-
-            return render_template('result.html', prediction=prediction_data, student_data=student_data)
-
-        except Exception as e:
-            flash(f"An error occurred: {e}", "danger")
-            return redirect(url_for('main.predict_form'))
-    else:
-        flash("Please fix form errors.", "danger")
-        return redirect(url_for('main.predict_form'))
+    return redirect(url_for('main.predict_form'))
 
 @main_bp.route('/history')
 def history():
@@ -146,13 +148,13 @@ def view_prediction(id):
     prediction = Prediction.query.get_or_404(id)
 
     student_data = {
-        'study_hours': Student.Study_Hours_Per_Day,
-        'extracurricular_hours': Student.Extracurricular_Hours_Per_Day,
-        'sleep_hours': Student.Sleep_Hours_Per_Day,
-        'social_hours': Student.Social_Hours_Per_Day,
-        'physical_activity_hours': Student.Physical_Activity_Hours_Per_Day,
-        'gpa': Student.GPA,
-        'stress_level': Student.Stress_Level
+        'study_hours': prediction.Study_Hours_Per_Day,
+        'extracurricular_hours': prediction.Extracurricular_Hours_Per_Day,
+        'sleep_hours': prediction.Sleep_Hours_Per_Day,
+        'social_hours': prediction.Social_Hours_Per_Day,
+        'physical_activity_hours': prediction.Physical_Activity_Hours_Per_Day,
+        'predicted_gpa': prediction.GPA,
+        'stress_level': prediction.Stress_Level
     }
 
     suggestions = []
