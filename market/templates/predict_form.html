@@ -13,16 +13,20 @@ Make Prediction - Student Performance Predictor
         <div class="form-container">
             <form method="POST" action="{{ url_for('main.predict_form') }}">
                 {{ form.hidden_tag() }}
-                
+                <div class="mb-3">
+                    <label for="Student_Id" class="form-label">{{ form.Student_Id.label }}</label>
+                    {{ form.Student_Id(class="form-control", type="number", min="0", step="1", maxlength="10",
+                    placeholder="Enter student ID") }}
+                </div>
                 <div class="mb-3">
                     <label for="study_hours" class="form-label">{{ form.study_hours.label }}</label>
                     {{ form.study_hours(class="form-control", min="0", max="24", step="0.1") }}
                     {% if form.study_hours.errors %}
-                        <div class="text-danger">
-                            {% for error in form.study_hours.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {% for error in form.study_hours.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
 
@@ -30,11 +34,11 @@ Make Prediction - Student Performance Predictor
                     <label for="extracurricular_hours" class="form-label">{{ form.extracurricular_hours.label }}</label>
                     {{ form.extracurricular_hours(class="form-control", min="0", max="24", step="0.1") }}
                     {% if form.extracurricular_hours.errors %}
-                        <div class="text-danger">
-                            {% for error in form.extracurricular_hours.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {% for error in form.extracurricular_hours.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
 
@@ -42,11 +46,11 @@ Make Prediction - Student Performance Predictor
                     <label for="sleep_hours" class="form-label">{{ form.sleep_hours.label }}</label>
                     {{ form.sleep_hours(class="form-control", min="3", max="12", step="1") }}
                     {% if form.sleep_hours.errors %}
-                        <div class="text-danger">
-                            {% for error in form.sleep_hours.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {% for error in form.sleep_hours.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
 
@@ -54,37 +58,36 @@ Make Prediction - Student Performance Predictor
                     <label for="social_hours" class="form-label">{{ form.social_hours.label }}</label>
                     {{ form.social_hours(class="form-control", min="0", max="24", step="0.1") }}
                     {% if form.social_hours.errors %}
-                        <div class="text-danger">
-                            {% for error in form.social_hours.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {% for error in form.social_hours.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="physical_activity_hours" class="form-label">{{ form.physical_activity_hours.label }}</label>
-                    {{ form.physical_activity_hours(class="form-control", min="0", max="24", step="1") }}
+                    <label for="physical_activity_hours" class="form-label">{{ form.physical_activity_hours.label
+                        }}</label>
+                    {{ form.physical_activity_hours(class="form-control", min="0", max="24", step="0.1") }}
                     {% if form.physical_activity_hours.errors %}
-                        <div class="text-danger">
-                            {% for error in form.physical_activity_hours.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {% for error in form.physical_activity_hours.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
-
-                
 
                 <div class="mb-3">
                     <label for="stress_level" class="form-label">{{ form.stress_level.label }}</label>
                     {{ form.stress_level(class="form-select") }}
                     {% if form.stress_level.errors %}
-                        <div class="text-danger">
-                            {% for error in form.stress_level.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="text-danger">
+                        {% for error in form.stress_level.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
 

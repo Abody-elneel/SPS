@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'layout.html' %}
 {% block title %}
 Register Page
 {% endblock %}
@@ -8,15 +8,12 @@ Register Page
     <div class="container">
         <form method="POST" class="form-register" style="color:white">
             {{form.hidden_tag()}}
-           <img class="mb-4" src="{{ url_for('static', filename='a.png') }}" alt="" width="300" height="300" >
+           <img class="mb-4" src="{{ url_for('static', filename='logo.jpg') }}" alt="" width="300" height="300" >
             <h1 class="h3 mb-3 font-weight-normal" style="color: indigo">
                 Please Create your Account
             </h1>
             <div style="color: indigo">
             <br>
-            {{ form.username.label() }}
-            {{ form.username(class="form-control", placeholder="User Name") }}
-
             {{ form.email_address.label() }}
             {{ form.email_address(class="form-control", placeholder="Email Address") }}
 
@@ -25,6 +22,17 @@ Register Page
 
             {{ form.password_confirm.label() }}
             {{ form.password_confirm(class="form-control", placeholder="Confirm Password") }}
+
+            {{ form.role.label() }}
+            {{ form.role(class="form-control") }}
+           
+            <div id="student-fields" style="display: none; margin-top: 10px;">
+    <label for="student_id">Student ID</label>
+    <input type="text" name="student_id" class="form-control" placeholder="Enter Student ID">
+
+    <label for="major" style="margin-top: 10px;">Major</label>
+    <input type="text" name="major" class="form-control" placeholder="Enter Major">
+</div>
 
             <br>
                 </div>
@@ -35,5 +43,23 @@ Register Page
             {{ form.submit(class="btn btn-lg btn-block btn-primary") }}
         </form>
     </div>
+    
+    <script>
+    const roleSelect = document.querySelector('select[name="role"]');
+    const studentFields = document.getElementById('student-fields');
+
+    roleSelect.addEventListener('change', function () {
+        if (this.value === 'user') {
+            studentFields.style.display = 'block';
+        } else {
+            studentFields.style.display = 'none';
+        }
+    });
+
+    // Trigger on page load (in case of form error reload)
+    if (roleSelect.value === 'user') {
+        studentFields.style.display = 'block';
+    }
+</script>
 </body>
 {% endblock %}
