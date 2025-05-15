@@ -47,7 +47,7 @@ Prediction Results - Student Performance Predictor
                 <div class="col-md-6">
                     <div class="result-card bg-light">
                         <div class="text-center">
-                            <div class="score-display mb-2">{{ prediction.score }}/100</div>
+                            <div class="score-display mb-2">{{ prediction.score }}/4</div>
 
                             {% if prediction.level == "Excellent" %}
                                 <span class="performance-badge badge bg-success">{{ prediction.level }}</span>
@@ -71,7 +71,7 @@ Prediction Results - Student Performance Predictor
                             <li><strong>Sleep:</strong> {{ student_data.sleep_hours }} hours/day</li>
                             <li><strong>Social:</strong> {{ student_data.social_hours }} hours/day</li>
                             <li><strong>Physical Activity:</strong> {{ student_data.physical_activity_hours }} hours/day</li>
-                            <li><strong>GPA:</strong> {{ student_data.gpa }}</li>
+                            
                             <li><strong>Stress Level:</strong> {{ student_data.stress_level }}</li>
                         </ul>
                     </div>

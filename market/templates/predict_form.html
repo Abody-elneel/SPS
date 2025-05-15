@@ -1,3 +1,4 @@
+
 {% extends "layout.html" %}
 
 {% block title %}
@@ -64,7 +65,7 @@ Make Prediction - Student Performance Predictor
 
                 <div class="mb-3">
                     <label for="physical_activity_hours" class="form-label">{{ form.physical_activity_hours.label }}</label>
-                    {{ form.physical_activity_hours(class="form-control", min="0", max="24", step="1") }}
+                    {{ form.physical_activity_hours(class="form-control", min="0", max="24", step="0.1") }}
                     {% if form.physical_activity_hours.errors %}
                         <div class="text-danger">
                             {% for error in form.physical_activity_hours.errors %}
@@ -73,8 +74,6 @@ Make Prediction - Student Performance Predictor
                         </div>
                     {% endif %}
                 </div>
-
-                
 
                 <div class="mb-3">
                     <label for="stress_level" class="form-label">{{ form.stress_level.label }}</label>

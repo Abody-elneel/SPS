@@ -1,11 +1,15 @@
 import pandas as pd
 import pickle
 import os
+import joblib as j
+
 
 # Load the model once (global variable)
-model_path = os.path.join(os.path.dirname(__file__), 'predict.pkl')
+model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
 with open(model_path, 'rb') as file:
-    model = pickle.load(file)
+    model = j.load(file)
+    print('gg')
+
 
 def predict_performance(form_data):
     """
@@ -26,9 +30,9 @@ def predict_performance(form_data):
     # Prepare input features in the same order used in training
     features = pd.DataFrame([{
         'Study_Hours_Per_Day': form_data.get('Study_Hours_Per_Day', 0),
+        'Extracurricular_Hours_Per_Day': form_data.get('Extracurricular_Hours_Per_Day', 0),
         'Sleep_Hours_Per_Day': form_data.get('Sleep_Hours_Per_Day', 0),
         'Social_Hours_Per_Day': form_data.get('Social_Hours_Per_Day', 0),
-        'Extracurricular_Hours_Per_Day': form_data.get('Extracurricular_Hours_Per_Day', 0),
         'Physical_Activity_Hours_Per_Day': form_data.get('Physical_Activity_Hours_Per_Day', 0),
         'Stress_Level': form_data.get('Stress_Level', 'Medium')
     }])
@@ -36,7 +40,13 @@ def predict_performance(form_data):
     # Handle categorical encoding (e.g., Stress_Level)
     # Make sure this matches your model's training preprocessing
     if 'Stress_Level' in features.columns:
-        features = pd.get_dummies(features, columns=['Stress_Level'], drop_first=True)
+            if features['Stress_Level'].dtype == 'object':
+                # Convert categorical stress levels to numerical values
+                 features['Stress_Level'] = features['Stress_Level'].map({
+                'Low': 1,
+                'Medium': 2,
+                'High': 3
+            }).fillna(1).astype(int)
 
     # Align features with training columns if needed (optional, safer)
     # model_features = model.feature_names_in_
